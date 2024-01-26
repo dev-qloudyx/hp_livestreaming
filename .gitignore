@@ -9,3 +9,6 @@ logs/*
 .env*
 # VS Code settings
 .vscode
+# Docker
+docker-compose.yml
+Dockerfile
