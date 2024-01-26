@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-04 22:44+0000\n"
+"POT-Creation-Date: 2024-01-26 21:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,62 +49,78 @@ msgstr "Foto"
 msgid "Permission denied. You do not have the required role(s)."
 msgstr "Permissão negada. Você não tem a função necessária(s)."
 
-#: apps/users/templates/account/login.html:10
-#: apps/users/templates/account/login.html:14
+#: apps/users/templates/account/login.html:25
 msgid "Sign In"
 msgstr "Iniciar Sessão"
 
-#: apps/users/templates/account/logout.html:7
+#: apps/users/templates/account/logout.html:10
 #: apps/users/templates/account/logout.html:22
-#, fuzzy
-#| msgid "Sign In"
+
 msgid "Sign Out"
 msgstr "Iniciar Sessão"
 
-#: apps/users/templates/account/logout.html:9
+#: apps/users/templates/account/logout.html:11
 msgid "Are you sure you want to sign out?"
 msgstr "Tem a certeza de que deseja sair?"
 
-#: apps/users/templates/account/password_change.html:10
-#: apps/users/templates/account/password_change.html:16
-#: apps/users/templates/profile/profile.html:32
+#: apps/users/templates/account/password_change.html:11
+#: apps/users/templates/account/password_change.html:15
+#: apps/users/templates/account/password_reset_from_key.html:25
+#: apps/users/templates/account/password_reset_from_key.html:40
+#: apps/users/templates/account/password_reset_from_key_done.html:21
+#: apps/users/templates/profile/profile.html:37
 msgid "Change Password"
 msgstr "Redefinir Palavra-passe"
 
-#: apps/users/templates/account/password_reset.html:6
-#: apps/users/templates/account/password_reset_done.html:8
-#: apps/users/templates/account/password_reset_done.html:13
+#: apps/users/templates/account/password_reset.html:19
+#: apps/users/templates/account/password_reset_done.html:18
 msgid "Password Reset"
 msgstr "Redefinição de Palavra-passe"
 
-#: apps/users/templates/account/password_reset.html:11
 msgid ""
-"\"Forgotten your password? Enter your email address below, and we'll send "
-"you an email allowing you to reset it.\""
+"Forgotten your password? Enter your email address below, and we'll send you "
+"an email allowing you to reset it."
 msgstr ""
 "\"Esqueceu a sua palavra-passe? Insira o seu endereço de email abaixo, e nós "
 "enviaremos um email permitindo que você a redefina.\""
 
-#: apps/users/templates/account/password_reset.html:18
-msgid "\"Reset My Password\""
+msgid "Reset My Password"
 msgstr "Resetar Palavra-Passe"
 
-#: apps/users/templates/account/password_reset.html:21
-msgid "\"Please contact us if you have any trouble resetting your password.\""
+
+msgid "Please contact us if you have any trouble resetting your password."
 msgstr ""
 "\"Por favor, entre em contato conosco se tiver algum problema para redefinir "
 "sua palavra-passe.\""
 
-#: apps/users/templates/account/password_reset_done.html:19
-msgid ""
-"We have sent you an email. If you have not received it please check your "
-"spam folder. Otherwise contact us if you do not receive it in a few minutes."
+#: apps/users/templates/account/password_reset_done.html:25
+msgid "Otherwise, contact us if you do not receive it in a few minutes."
 msgstr ""
-"Enviamos-lhe um email. Se não o recebeu, por favor verifique a sua pasta de "
-"spam. Caso contrário, entre em contacto connosco se não o receber dentro de "
-"alguns minutos."
 
-#: apps/users/templates/account/signup.html:13
+#: apps/users/templates/account/password_reset_from_key.html:23
+msgid "Bad Token"
+msgstr ""
+
+#: apps/users/templates/account/password_reset_from_key.html:32
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+
+#: apps/users/templates/account/password_reset_from_key_done.html:23
+msgid "Your password is now changed."
+msgstr ""
+
+#: apps/users/templates/account/password_set.html:5
+#: apps/users/templates/account/password_set.html:9
+#: apps/users/templates/account/password_set.html:20
+
+msgid "Set Password"
+msgstr "Redefinir Palavra-passe"
+
+#: apps/users/templates/account/signup.html:19
 msgid "Sign Up"
 msgstr "Registar"
 
@@ -112,11 +128,11 @@ msgstr "Registar"
 msgid "New Photo"
 msgstr "Nova Foto"
 
-#: apps/users/templates/profile/profile.html:18
+#: apps/users/templates/profile/profile.html:23
 msgid "Profile Info"
 msgstr "Informação do Perfil"
 
-#: apps/users/templates/profile/profile.html:31
+
 msgid "Update"
 msgstr "Atualizar"
 
@@ -137,3 +153,6 @@ msgstr "A sua palavra-passe não pode ser uma palavra-passe comum."
 
 msgid "Your password can’t be entirely numeric."
 msgstr "A sua palavra-passe não pode ser inteiramente numérica."
+
+msgid "We have sent you an email. If you have not received it, please check your spam folder. Otherwise, contact us if you do not receive it in a few minutes."
+msgstr "Enviamos-lhe um email. Se não o recebeu, por favor verifique a sua pasta de spam. Caso contrário, entre em contacto connosco se não o receber dentro de alguns minutos."

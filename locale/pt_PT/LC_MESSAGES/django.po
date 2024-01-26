@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-04 22:44+0000\n"
+"POT-Creation-Date: 2024-01-26 21:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,44 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: templates/_navbar.html:5
-msgid "Sign Up"
-msgstr "Registo"
+#: apps/livestreaming/templates/drone_list.html:28
+msgid "Add"
+msgstr ""
 
-#: templates/_navbar.html:6
+#: templates/_navbar.html:5
+msgid "LiveStreaming"
+msgstr ""
+
+#: templates/_navbar.html:15
+msgid "ADD User"
+msgstr ""
+
+#: templates/_navbar.html:18
+msgid "ADD Drone"
+msgstr ""
+
+#: templates/_navbar.html:21
+msgid "Drone List"
+msgstr ""
+
+#: templates/_navbar.html:24
+msgid "UserDrone List"
+msgstr ""
+
+#: templates/_navbar.html:28
+msgid "My Drones Streaming"
+msgstr ""
+
+#: templates/_navbar.html:32
+msgid "Profile"
+msgstr "Profile"
+
+#: templates/_navbar.html:35
 msgid "Logout"
 msgstr "Sair"
 
-#~ msgid "Profile"
-#~ msgstr "Profile"
+#~ msgid "Sign Up"
+#~ msgstr "Registo"
 
 #~ msgid "Register"
 #~ msgstr "Registar"
