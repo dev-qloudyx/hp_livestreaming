@@ -50,7 +50,7 @@ class UserDroneCreateView(CreateView):
     form_class = UserDroneForm
     template_name = 'user_drone.html'
     
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    def get_context_data(self, **kwargs):
         kwargs['drone'] = get_object_or_404(Drone, pk=self.kwargs['drone_id'])
         return super().get_context_data(**kwargs)
     

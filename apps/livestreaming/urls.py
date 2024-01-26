@@ -1,6 +1,7 @@
 from django.urls import path
 
 from apps.livestreaming.views import DroneCreateView, DroneListView, UserDroneListView, UserDroneCreateView, DroneUpdateView, DroneView, UserDroneDeleteView
+
 app_name = "livestreaming"
 
 urlpatterns = [
