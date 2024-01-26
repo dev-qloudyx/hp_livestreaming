@@ -1,0 +1,32 @@
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load allauth %}
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    {% include '_head.html' %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base_login.css' %}">
+    <link rel="icon" href="#" type="image/png" sizes="16x16">
+</head>
+<body>
+    <div> 
+        {% include '_alert.html' %}
+        <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+            <div class="w-100" style="max-width: 500px;">
+                <form method="POST" class="bg-white shadow rounded px-5 py-4 mb-4">
+                    <img class="mb-4" src="{% static 'img/logo-hpdrones-cor.webp' %}" alt="">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{ form|crispy }}
+                    </fieldset>
+                    <div class="mt-4">
+                        <button class="btn btn-danger w-100 py-2 custom-btn" type="submit">{% trans "Sign In" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

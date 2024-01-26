@@ -1,0 +1,6 @@
+{% for message in messages %}
+<div id="alert" class="text-center alert alert-{{ message.tags }}">
+    <i style="font-size: 20px;" class="fas fa-exclamation-circle"></i>
+    {{ message }}
+</div>
+{% endfor %}

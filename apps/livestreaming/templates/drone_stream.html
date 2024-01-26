@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include '_alert.html' %}
+    <div class="d-flex align-items-center justify-content-center bg-light" style="padding-top: 100px;">
+        <div class="w-100">
+            <div class="row">
+                {% if page_obj %}
+                    {% for streamkey in page_obj %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body" style="height: 100%;">
+                                    {% if request.user.role.role_name == 'admin' %}
+                                    <a class="card-title" href="{% url 'livestreaming:streamkey-update' client_id=streamkey.client.pk pk=streamkey.pk %}">Update Streaming Key: {{ streamkey.key }}</a>
+                                    {% else %}
+                                    <h5 class="card-title">Streaming Key: {{ streamkey.key }}</h5>
+                                    {% endif %}
+                                    <video id="drone_streaming_{{ streamkey.key }}" class="video-js vjs-default-skin vjs-fluid"
+                                        controls preload="auto" data-setup='{}' muted>
+                                        <source src="https://nginx-rtmp.qloudyx.pt/live/{{ streamkey.key }}.m3u8"
+                                            type="application/x-mpegURL">
+                                    </video>
+                                    <script>
+                                        var player = videojs('drone_streaming_{{ streamkey.key }}');
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="card">
+                        <div class="card-body" style="height: 100%;">
+                            <p>No streaming available.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% include '_pagination.html' %}
+{% endblock %}
+

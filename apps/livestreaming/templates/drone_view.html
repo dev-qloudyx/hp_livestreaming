@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include '_alert.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/hls/style.css' %}">
+
+<div class="d-flex align-items-center justify-content-center bg-light" style="padding-top: 50px;">
+    <div class="w-100">
+        <div class="card">
+            <div class="card-body" style="height: 100%;">
+                <h5 class="card-title">Drone: {{ object.name }}</h5>
+                <div id="video-container">
+                    <video id="drone_streaming_{{ object.key }}" controls autoplay playsinline class="videoCentered"
+                        style="width: 100%"></video>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var video = document.getElementById('drone_streaming_{{ object.key }}');
+                        if (Hls.isSupported()) {
+                            var hls = new Hls();
+                            hls.loadSource('https://nginx-rtmp.qloudyx.pt/live/{{ object.key }}.m3u8');
+                            hls.attachMedia(video);
+                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                            video.src = 'https://nginx-rtmp.qloudyx.pt/live/{{ object.key }}.m3u8';
+                        }
+                    });
+                </script>
+                <script src="{% static 'js/hls/hls.js' %}"></script>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

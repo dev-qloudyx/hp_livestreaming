@@ -1,0 +1,16 @@
+.dockerignore
+.git
+.gitignore
+.DS_Store
+.env*
+Dockerfile
+docker-compose.yml
+Dockerize.readme
+Pipfile
+Pipfile.lock
+tests
+tests.py
+.vscode
+logs/*log
+media/profile_pics
+nginx

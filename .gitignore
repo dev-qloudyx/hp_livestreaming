@@ -1,0 +1,11 @@
+# MacOS
+.DS_Store
+# Python bytecode
+__pycache__
+# Django dynamic directories
+media/*
+logs/*
+# local environment variables
+.env*
+# VS Code settings
+.vscode

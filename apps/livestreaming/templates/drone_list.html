@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+    <div> 
+        {% include '_alert.html' %}
+        <div class="d-flex align-items-center justify-content-center bg-light" style="padding-top: 100px;">
+            <div class="w-100">
+                <table class="table">
+                    <thead>
+                        <tr><th>#</th>
+                            <th>Drone</th>
+                            <th>Key</th>
+                            <th>Streaming</th>
+                            <th>UserDrone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for drone in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ drone.name }}</td>
+                                <td>{{ drone.key }}</td>
+                                <td>
+                                    <a href="{% url 'livestreaming:drone_view' pk=drone.pk %}">View</a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'livestreaming:user_drone_create' drone_id=drone.pk %}">{% trans "Add" %}</a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'livestreaming:drone_update' pk=drone.pk %}">Update</a>
+                                </td>
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+        {% include '_pagination.html' %}
+    </div>
+{% endblock %}
