@@ -20,6 +20,15 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         postgresql-client libpq-dev gcc python3-dev musl-dev \
         libjpeg-dev zlib1g-dev libmagic-dev libffi-dev \
+        proj-bin proj-data libproj-dev gdal-bin libgdal-dev \
+        libgeos-dev unar 
+
+# Install cryptography and PyCryptodome
+RUN pip install cryptography
+
+# Install rarfile
+RUN pip install rarfile
+
 # Upgrade pip
 RUN pip install --upgrade pip
 
