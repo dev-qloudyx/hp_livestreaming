@@ -1,47 +1,21 @@
-FROM python:3.10.13-bullseye
+FROM python:3.8-bullseye
 
-# Create the 'app' user and group with specific user ID and group ID
-RUN groupadd -g 999 app && useradd -r -u 999 -g app app
-
-
-# Set the home and app directories for the 'app' user
 ENV HOME=/home/hplivestreaming
 ENV APP_HOME=${HOME}/web
 
-# Create the necessary directories and set the working directory
-RUN mkdir -p ${APP_HOME} ${APP_HOME}/staticfiles ${APP_HOME}/media
+RUN mkdir -p ${APP_HOME}
 WORKDIR ${APP_HOME}
 
-# Set environment variables for improved performance
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install system dependencies and build dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         postgresql-client libpq-dev gcc python3-dev musl-dev \
-        libjpeg-dev zlib1g-dev libmagic-dev libffi-dev \
-        proj-bin proj-data libproj-dev gdal-bin libgdal-dev \
-        libgeos-dev unar 
+        libjpeg-dev zlib1g-dev libmagic-dev libffi-dev
 
-# Install cryptography and PyCryptodome
-RUN pip install cryptography
-
-# Install rarfile
-RUN pip install rarfile
-
-# Upgrade pip
 RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copy and install application dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the application code
 COPY . ${APP_HOME}
-
-# Change ownership of the app directory to the 'app' user
-RUN chown -R app:app ${APP_HOME}
-
-# Run the application as the 'app' user
-USER app
