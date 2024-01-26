@@ -3,6 +3,7 @@ FROM python:3.10.13-bullseye
 # Create the 'app' user and group with specific user ID and group ID
 RUN groupadd -g 999 app && useradd -r -u 999 -g app app
 
+
 # Set the home and app directories for the 'app' user
 ENV HOME=/home/hplivestreaming
 ENV APP_HOME=${HOME}/web
@@ -20,6 +21,15 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         postgresql-client libpq-dev gcc python3-dev musl-dev \
         libjpeg-dev zlib1g-dev libmagic-dev libffi-dev \
+        proj-bin proj-data libproj-dev gdal-bin libgdal-dev \
+        libgeos-dev unar 
+
+# Install cryptography and PyCryptodome
+RUN pip install cryptography
+
+# Install rarfile
+RUN pip install rarfile
+
 # Upgrade pip
 RUN pip install --upgrade pip
 
