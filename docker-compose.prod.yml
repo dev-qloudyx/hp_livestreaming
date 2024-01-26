@@ -17,7 +17,7 @@ services:
         depends_on:
             - db
         networks:
-            - backend
+            - hpd_alfa_be_backend-network
     db:
         image: postgres:15.4-alpine
         volumes:
@@ -25,12 +25,12 @@ services:
         ports:
             - 5452:5432
         env_file:
-            - ./.env.db.dev
+            - ./.env.db.prod
         restart: always
         networks:
-            - backend
+            - hpd_alfa_be_backend-network
 networks:
-  backend:
+  hpd_alfa_be_backend-network:
    external: true
 volumes:
     postgres_data:
