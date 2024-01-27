@@ -15,6 +15,7 @@ from django.contrib import messages
 
 # Create your views here.
 
+@method_decorator([login_required, roles_required(['admin', 'user'])], name='dispatch')
 class DroneView(DetailView):
     model = Drone
     template_name = 'drone_view.html'
@@ -67,7 +68,7 @@ class UserDroneCreateView(CreateView):
     def get_success_url(self):
         return reverse('livestreaming:drone_list')
 
-
+@method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class UserDroneListView(UserPassesTestMixin, ListView):
     model = UserDrone
     template_name = 'user_drone_list.html'
@@ -95,6 +96,7 @@ class UserDroneListView(UserPassesTestMixin, ListView):
         else:
             return False
 
+@method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class UserDroneUpdateView(UpdateView):
     model = UserDrone
     template_name = 'user_drone_update.html'
@@ -112,6 +114,7 @@ class UserDroneUpdateView(UpdateView):
         form.instance.user = get_object_or_404(UserDrone, id=self.kwargs['user_id'])
         return super().form_valid(form)
 
+@method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class UserDroneDeleteView(DeleteView):
     model = UserDrone
  
