@@ -13,16 +13,12 @@
 </head>
 
 <body>
- 
+
   <div class="wrapper">
-    <!-- Navbar  -->
-    {% include '_navbar.html' %}
-    
-    <!-- Sidebar  -->
-    
     <!-- Page Content  -->
     <div id="content">
-        {% block content %}{% endblock %}
+      {% include '_navbar.html' %}
+      {% block content %}{% endblock %}
     </div>
   </div>
   <!-- Footer -->

@@ -7,6 +7,12 @@
 <html>
 <head>
     {% include '_head.html' %}
+    <!-- Add the meta viewport tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add the Bootstrap CDN links -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/base_login.css' %}">
     <link rel="icon" href="#" type="image/png" sizes="16x16">
 </head>
@@ -16,13 +22,14 @@
         <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
             <div class="w-100" style="max-width: 500px;">
                 <form method="POST" class="bg-white shadow rounded px-5 py-4 mb-4">
-                    <img class="mb-4" src="{% static 'img/logo-hpdrones-cor.webp' %}" alt="">
+                    <img class="mb-4" src="{% static 'img/logo-hpdrones-cor.webp' %}" alt="HPDrones" width="300px">
                     {% csrf_token %}
                     <fieldset>
                         {{ form|crispy }}
                     </fieldset>
                     <div class="mt-4">
-                        <button class="btn btn-danger w-100 py-2 custom-btn" type="submit">{% trans "Sign In" %}</button>
+                        <!-- Use the Bootstrap button classes -->
+                        <button class="btn btn-danger btn-block py-2" type="submit">{% trans "Sign In" %}</button>
                     </div>
                 </form>
             </div>
