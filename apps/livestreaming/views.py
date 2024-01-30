@@ -6,12 +6,14 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView, D
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from apps.livestreaming.filters import DroneFilter, UserDroneFilter
 from apps.livestreaming.forms import DroneForm, UserDroneForm
 from apps.livestreaming.models import Drone, UserDrone
 from apps.users.models import User
 from apps.users.roles import roles_required
 from django.db import IntegrityError
 from django.contrib import messages
+from django_filters.views import FilterView
 
 # Create your views here.
 
@@ -40,9 +42,10 @@ class DroneUpdateView(UpdateView):
         return reverse('livestreaming:drone_list')
 
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')  
-class DroneListView(ListView):
+class DroneListView(FilterView):
     model = Drone
     template_name = 'drone_list.html'
+    filterset_class = DroneFilter
     paginate_by = 5
 
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')
@@ -69,10 +72,11 @@ class UserDroneCreateView(CreateView):
         return reverse('livestreaming:drone_list')
 
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')
-class UserDroneListView(UserPassesTestMixin, ListView):
+class UserDroneListView(UserPassesTestMixin, FilterView):
     model = UserDrone
     template_name = 'user_drone_list.html'
     context_object_name = 'user_drone'
+    filterset_class = UserDroneFilter
     paginate_by = 5
 
     def get_queryset(self):
