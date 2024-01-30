@@ -17,22 +17,21 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           {% if request.user.role.role_name == 'admin' %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'account_signup' %}">{% trans "ADD User" %}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'livestreaming:drone_create' %}">{% trans "ADD Drone" %}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'livestreaming:drone_list' %}">{% trans "Drone List" %}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'livestreaming:user_drone_list' %}">{% trans "UserDrone List" %}</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {% trans "Admin Actions" %}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'account_signup' %}">{% trans "ADD User" %}</a>
+              <a class="dropdown-item" href="{% url 'livestreaming:drone_create' %}">{% trans "ADD Drone" %}</a>
+              <a class="dropdown-item" href="{% url 'livestreaming:drone_list' %}">{% trans "Drone List" %}</a>
+              <a class="dropdown-item" href="{% url 'livestreaming:user_drone_list' %}">{% trans "UserDrone List" %}</a>
+            </div>
           </li>
           {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'livestreaming:user_drone_list_by_user' user_id=request.user.id %}">{% trans "My Drones Streaming" %}</a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'livestreaming:user_drone_list_by_user' user_id=request.user.id %}">{% trans "My Drones Streaming" %}</a>
+            </li>
           {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'users:profile' %}">{% trans "Profile" %}</a>
