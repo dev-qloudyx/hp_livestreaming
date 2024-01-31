@@ -11,11 +11,13 @@
         {% csrf_token %}
         <div class="card mb-3">
             <div class="card-body d-flex align-items-center">
-                <img x-data="{src: '{{ user.profile.image.url }}'}" :src="src" class="rounded-circle me-3" style="width: 100px; height: 100px;">
-                <div>
+                <div class="mb-3">
+                    <img x-data="{src: '{{ user.profile.image.url }}'}" :src="src" class="rounded-circle me-3" style="width: 100px; height: 100px;">
+                </div>
+                <div class="mb-3">
                     <h2>{{ user.username }}</h2>
                     <p>{{ user.email }}</p>
-                    {% bootstrap_field p_form.image %}
+                    <input class="form-control" type="file" name="image">
                 </div>
             </div>
         </div>
