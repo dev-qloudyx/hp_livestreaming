@@ -21,7 +21,10 @@
         <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
             <div class="w-100" style="max-width: 500px;">
                 <form method="POST" class="bg-white shadow rounded px-5 py-4 mb-4">
-                    <img class="mb-4" src="{% static 'img/logo-hpdrones-cor.webp' %}" alt="HPDrones" width="300px">
+                    <div class="text-center">
+                        <img style="padding-bottom: 10px;" src="{% static 'img/logo-hpdrones-cor.webp' %}" alt="HPDrones" width="200px"></img>
+                        {% trans "LiveStreaming" %}
+                    </div>
                     {% csrf_token %}
                     <fieldset>
                         {{ form|crispy }}
