@@ -71,7 +71,7 @@ class UserDroneCreateView(CreateView):
     def get_success_url(self):
         return reverse('livestreaming:drone_list')
 
-@method_decorator([login_required, roles_required(['admin'])], name='dispatch')
+@method_decorator([login_required, roles_required(['admin', 'user'])], name='dispatch')
 class UserDroneListView(UserPassesTestMixin, FilterView):
     model = UserDrone
     template_name = 'user_drone_list.html'
