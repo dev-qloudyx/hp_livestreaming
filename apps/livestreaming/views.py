@@ -15,6 +15,7 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django_filters.views import FilterView
 
+
 # Create your views here.
 
 @method_decorator([login_required, roles_required(['admin', 'user'])], name='dispatch')
@@ -121,8 +122,8 @@ class UserDroneUpdateView(UpdateView):
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class UserDroneDeleteView(DeleteView):
     model = UserDrone
- 
+
     def get_success_url(self):
-        return reverse_lazy('livestreaming:user_drone_list')
+        return reverse('livestreaming:user_drone_list')
 
 

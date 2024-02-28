@@ -14,6 +14,19 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="icon" href="#" type="image/png" sizes="16x16">
+    <style>
+        #div_id_password {
+            position: relative;
+        }
+    
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div> 
@@ -28,6 +41,7 @@
                     {% csrf_token %}
                     <fieldset>
                         {{ form|crispy }}
+                        
                     </fieldset>
                     <div class="mt-4">
                         <!-- Use the Bootstrap button classes -->
@@ -37,5 +51,31 @@
             </div>
         </div>
     </div>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var divPassword = document.getElementById('div_id_password');
+    
+            var passwordToggleSpan = document.createElement('span');
+            passwordToggleSpan.className = 'password-toggle';
+            passwordToggleSpan.innerHTML = '<i class="fas fa-eye"></i>';
+            passwordToggleSpan.onclick = function () {
+                togglePasswordVisibility('id_password');
+            };
+    
+            divPassword.appendChild(passwordToggleSpan);
+        });
+    
+        function togglePasswordVisibility(fieldId) {
+            var passwordField = document.getElementById(fieldId);
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
+    </script>
+    
+    
 </body>
 </html>

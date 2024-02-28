@@ -1,7 +1,6 @@
 from allauth.account import app_settings, signals
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.account.models import Login
-from allauth.account.utils import send_email_confirmation
 from django.shortcuts import redirect
 
 def perform_login(
@@ -23,12 +22,10 @@ def perform_login(
     )
     return _perform_login(request, login)
 
-
 def _perform_login(request, login):
     hook_kwargs = _get_login_hook_kwargs(login)
-    send_email_confirmation(request, login.user, signup=hook_kwargs['signup'], email=login.user.email)
+    #send_email_confirmation(request, login.user, signup=hook_kwargs['signup'], email=login.user.email)
     return redirect('users:profile')
-
 
 def _get_login_hook_kwargs(login):
     return dict(
@@ -38,7 +35,6 @@ def _get_login_hook_kwargs(login):
         signup=login.signup,
         email=login.email,
     )
-
 
 def complete_signup(request, user, email_verification, success_url, signal_kwargs=None):
     if signal_kwargs is None:
