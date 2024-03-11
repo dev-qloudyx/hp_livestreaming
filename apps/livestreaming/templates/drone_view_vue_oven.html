@@ -1,0 +1,590 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include '_alert.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/hls/style.css' %}">
+<style>
+    
+
+    .player-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+</style>
+<div id="app">
+    <div class="container-lg mt-4">
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 mx-auto player-area rounded shadow overflow-hidden mb-2">
+          <div class="dummyPlayer d-flex justify-content-center text-center">
+            <span v-if="playerMessage" class="text-white position-absolute" style="left: 1rem; right: 1rem; bottom: 28.125%">
+              <i class="fas fa-info-circle me-1 text-info"></i>
+              {{playerMessage}}
+            </span>
+          </div>
+          <div class="player-wrapper">
+            <div id="player"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<script>
+    const url = '{{ url }}/llhls.m3u8';
+    const app = {
+    data: function () {
+        return {
+        reloadTimer: null,
+        player: null,
+        source: null,
+        playerMessage: null,
+        permanentLink: location.href,
+        createScript: null,
+        createScriptHTML: null,
+        playerVersion: null
+        }
+    },
+    methods: {
+        loadPlayer: function () {
+            
+            this.player = OvenPlayer.create("player", {
+                "autoStart": true,
+                "autoFallback": true,
+                "mute": false,
+                "sources": [{
+                    "type": "ll-hls",
+                    "file": url
+                }],
+                "hlsConfig": {
+                    "liveSyncDuration": 1.5,
+                    "liveMaxLatencyDuration": 3,
+                    "maxLiveSyncPlaybackRate": 1.5
+                }
+            });
+
+            this.playerVersion = this.player.getVersion();
+            
+            player.on('ready', function () {
+                this.player.getConfig().systemText.api.error[302].message = 'Video is OFFILINE';
+            });
+
+
+                    
+            
+        },
+        unLoadPlayer: function (optionChanged) {
+
+        if (this.reloadTimer) {
+            clearInterval(this.reloadTimer);
+            this.reloadTimer = null;
+        }
+
+        if (this.player) {
+
+            this.player.remove();
+            this.player = null;
+        }
+
+        if (optionChanged) {
+            this.playerMessage = 'The options have changed. Please reload the player.';
+        }
+        },
+        reloadPlayer: function () {
+
+        if (this.player) {
+
+            this.unLoadPlayer();
+        } else {
+
+            this.loadPlayer();
+        }
+        },
+        makePermanentLink: function () {
+
+        const link = {};
+        link.playerOption = this.playerOption;
+        link.demoOption = this.demoOption;
+
+        location.hash = encodeURIComponent(JSON.stringify(link));
+        this.permanentLink = location.href;
+
+        let script = 'const player = OvenPlayer.create("player_el_id", '
+            + JSON.stringify(this.playerOption) + ');';
+        this.createScript = js_beautify(script);
+        this.createScriptHTML = hljs.highlight(this.createScript, {
+            language: 'javascript'
+        }).value;
+        },
+        changeOptions: function () {
+
+        this.unLoadPlayer(true);
+        this.makePermanentLink();
+        }
+    },
+    computed: {
+        playoutDelayHintCheck: {
+        get: function () {
+            return false;
+        },
+        set: function (value) {
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        playOutDelayHintInput: {
+        get: function () {
+        },
+        set: function (value) {
+            if (value > 0) {
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+            }
+        }
+        },
+        reloadOnConnectionTimeoutCheck: {
+        get: function () {
+            return false;
+        },
+        set: function (value) {
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        llDashCheck: {
+        get: function () {
+
+            let value = false;
+
+            if (this.playerOption &&
+            this.playerOption.sources) {
+
+            _.each(this.playerOption.sources, function (source) {
+
+                if (source.type === 'dash' && source.lowLatency === true) {
+
+                value = true;
+                return;
+                }
+            });
+            }
+
+            return value;
+        },
+        set: function (value) {
+
+            if (this.playerOption &&
+            this.playerOption.sources) {
+
+            _.each(this.playerOption.sources, function (source) {
+
+                if (source.type === 'dash') {
+
+                if (value) {
+                    source.lowLatency = true;
+                } else {
+                    delete source.lowLatency;
+                }
+                }
+            });
+
+            if (!value) {
+
+                if (this.playerOption.lowLatencyMpdLiveDelay) {
+
+                delete this.playerOption.lowLatencyMpdLiveDelay;
+                }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+            }
+        }
+        },
+        llDashLiveDelay: {
+        get: function () {
+
+            if (this.playerOption.lowLatencyMpdLiveDelay &&
+            _.isNumber(this.playerOption.lowLatencyMpdLiveDelay)) {
+
+            return this.playerOption.lowLatencyMpdLiveDelay;
+            }
+        },
+        set: function (value) {
+
+            if (value) {
+
+            this.playerOption.lowLatencyMpdLiveDelay = value;
+
+            } else {
+
+            delete this.playerOption.lowLatencyMpdLiveDelay;
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsManageLatencyCheck: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig &&
+            (_.isNumber(this.playerOption.hlsConfig.liveSyncDuration)
+                || _.isNumber(this.playerOption.hlsConfig.liveMaxLatencyDuration)
+                || _.isNumber(this.playerOption.hlsConfig.maxLiveSyncPlaybackRate))) {
+
+            return true;
+            } else {
+            return false;
+            }
+        },
+        set: function (value) {
+
+            if (value) {
+            if (!this.playerOption.hlsConfig) {
+                this.playerOption.hlsConfig = {};
+            }
+            this.playerOption.hlsConfig.liveSyncDuration = 1.5;
+            this.playerOption.hlsConfig.liveMaxLatencyDuration = 3;
+            this.playerOption.hlsConfig.maxLiveSyncPlaybackRate = 1.5;
+            } else {
+
+            delete this.playerOption.hlsConfig.liveSyncDuration;
+            delete this.playerOption.hlsConfig.liveMaxLatencyDuration;
+            delete this.playerOption.hlsConfig.maxLiveSyncPlaybackRate;
+
+            if (_.isEmpty(this.playerOption.hlsConfig)) {
+
+                delete this.playerOption.hlsConfig;
+            }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsTargetLatency: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig &&
+            _.isNumber(this.playerOption.hlsConfig.liveSyncDuration)) {
+
+            return this.playerOption.hlsConfig.liveSyncDuration;
+            }
+        },
+        set: function (value) {
+            if (!this.playerOption.hlsConfig) {
+            this.playerOption.hlsConfig = {};
+            }
+
+            this.playerOption.hlsConfig.liveSyncDuration = value;
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsMaxLatency: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig &&
+            _.isNumber(this.playerOption.hlsConfig.liveMaxLatencyDuration)) {
+
+            return this.playerOption.hlsConfig.liveMaxLatencyDuration;
+            }
+        },
+        set: function (value) {
+            if (!this.playerOption.hlsConfig) {
+            this.playerOption.hlsConfig = {};
+            }
+
+            this.playerOption.hlsConfig.liveMaxLatencyDuration = value;
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsLiveSyncCatchupRate: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig &&
+            _.isNumber(this.playerOption.hlsConfig.maxLiveSyncPlaybackRate)) {
+
+            return this.playerOption.hlsConfig.maxLiveSyncPlaybackRate;
+            }
+        },
+        set: function (value) {
+            if (!this.playerOption.hlsConfig) {
+            this.playerOption.hlsConfig = {};
+            }
+
+            this.playerOption.hlsConfig.maxLiveSyncPlaybackRate = value;
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsEnableDrmCheck: {
+        get: function () {
+
+            return this.playerOption.hlsConfig && this.playerOption.hlsConfig.emeEnabled;
+        },
+        set: function (value) {
+            if (value) {
+
+            if (!this.playerOption.hlsConfig) {
+                this.playerOption.hlsConfig = {};
+            }
+            this.playerOption.hlsConfig.emeEnabled = true;
+            } else {
+
+            delete this.playerOption.hlsConfig.emeEnabled;
+
+            if (this.playerOption.hlsConfig.drmSystems) {
+                delete this.playerOption.hlsConfig.drmSystems;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig)) {
+
+                delete this.playerOption.hlsConfig;
+            }
+
+            delete this.playerOption.licenseCustomHeader;
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsFairPlayLicenseUrl: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig && this.playerOption.hlsConfig.drmSystems
+            && this.playerOption.hlsConfig.drmSystems["com.apple.fps"]) {
+            return this.playerOption.hlsConfig.drmSystems["com.apple.fps"].licenseUrl
+            }
+        },
+        set: function (value) {
+            if (value) {
+
+            if (!this.playerOption.hlsConfig) {
+                this.playerOption.hlsConfig = {};
+            }
+
+            if (!this.playerOption.hlsConfig.drmSystems) {
+                this.playerOption.hlsConfig.drmSystems = {};
+            }
+
+            if (!this.playerOption.hlsConfig.drmSystems["com.apple.fps"]) {
+                this.playerOption.hlsConfig.drmSystems["com.apple.fps"] = {};
+            }
+
+            this.playerOption.hlsConfig.drmSystems["com.apple.fps"].licenseUrl = value;
+            } else {
+
+            if (this.playerOption.hlsConfig.drmSystems["com.apple.fps"].licenseUrl) {
+                delete this.playerOption.hlsConfig.drmSystems["com.apple.fps"].licenseUrl;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig.drmSystems["com.apple.fps"])) {
+
+                delete this.playerOption.hlsConfig.drmSystems["com.apple.fps"];
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig.drmSystems)) {
+
+                delete this.playerOption.hlsConfig.drmSystems;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig)) {
+
+                delete this.playerOption.hlsConfig;
+            }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsFairPlayServerCertificateUrl: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig && this.playerOption.hlsConfig.drmSystems
+            && this.playerOption.hlsConfig.drmSystems["com.apple.fps"]) {
+            return this.playerOption.hlsConfig.drmSystems["com.apple.fps"].serverCertificateUrl
+            }
+        },
+        set: function (value) {
+            if (value) {
+
+            if (!this.playerOption.hlsConfig) {
+                this.playerOption.hlsConfig = {};
+            }
+
+            if (!this.playerOption.hlsConfig.drmSystems) {
+                this.playerOption.hlsConfig.drmSystems = {};
+            }
+
+            if (!this.playerOption.hlsConfig.drmSystems["com.apple.fps"]) {
+                this.playerOption.hlsConfig.drmSystems["com.apple.fps"] = {};
+            }
+
+            this.playerOption.hlsConfig.drmSystems["com.apple.fps"].serverCertificateUrl = value;
+            } else {
+
+            if (this.playerOption.hlsConfig.drmSystems["com.apple.fps"].serverCertificateUrl) {
+                delete this.playerOption.hlsConfig.drmSystems["com.apple.fps"].serverCertificateUrl;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig.drmSystems["com.apple.fps"])) {
+
+                delete this.playerOption.hlsConfig.drmSystems["com.apple.fps"];
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig.drmSystems)) {
+
+                delete this.playerOption.hlsConfig.drmSystems;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig)) {
+
+                delete this.playerOption.hlsConfig;
+            }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsWidevineLicenseUrl: {
+        get: function () {
+
+            if (this.playerOption.hlsConfig && this.playerOption.hlsConfig.drmSystems
+            && this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"]) {
+            return this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"].licenseUrl
+            }
+        },
+        set: function (value) {
+            if (value) {
+
+            if (!this.playerOption.hlsConfig) {
+                this.playerOption.hlsConfig = {};
+            }
+
+            if (!this.playerOption.hlsConfig.drmSystems) {
+                this.playerOption.hlsConfig.drmSystems = {};
+            }
+
+            if (!this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"]) {
+                this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"] = {};
+            }
+
+            this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"].licenseUrl = value;
+            } else {
+
+            if (this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"].licenseUrl) {
+                delete this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"].licenseUrl;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"])) {
+
+                delete this.playerOption.hlsConfig.drmSystems["com.widevine.alpha"];
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig.drmSystems)) {
+
+                delete this.playerOption.hlsConfig.drmSystems;
+            }
+
+            if (_.isEmpty(this.playerOption.hlsConfig)) {
+
+                delete this.playerOption.hlsConfig;
+            }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsCustomHeaderKey: {
+        get: function () {
+
+            if (this.playerOption.licenseCustomHeader && this.playerOption.licenseCustomHeader.key) {
+            return this.playerOption.licenseCustomHeader.key
+            }
+        },
+        set: function (value) {
+            if (value) {
+
+            if (!this.playerOption.licenseCustomHeader) {
+                this.playerOption.licenseCustomHeader = {};
+            }
+
+            this.playerOption.licenseCustomHeader.key = value;
+            } else {
+
+            if (this.playerOption.licenseCustomHeader.key) {
+                delete this.playerOption.licenseCustomHeader.key;
+            }
+
+            if (_.isEmpty(this.playerOption.licenseCustomHeader)) {
+
+                delete this.playerOption.licenseCustomHeader;
+            }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        },
+        hlsCustomHeaderValue: {
+        get: function () {
+
+            if (this.playerOption.licenseCustomHeader && this.playerOption.licenseCustomHeader.value) {
+            return this.playerOption.licenseCustomHeader.value
+            }
+        },
+        set: function (value) {
+            if (value) {
+
+            if (!this.playerOption.licenseCustomHeader) {
+                this.playerOption.licenseCustomHeader = {};
+            }
+
+            this.playerOption.licenseCustomHeader.value = value;
+            } else {
+
+            if (this.playerOption.licenseCustomHeader.value) {
+                delete this.playerOption.licenseCustomHeader.value;
+            }
+
+            if (_.isEmpty(this.playerOption.licenseCustomHeader)) {
+
+                delete this.playerOption.licenseCustomHeader;
+            }
+            }
+
+            this.unLoadPlayer(true);
+            this.makePermanentLink();
+        }
+        }
+    },
+    mounted: function () {
+        console.log("trying to load the player..")
+        try{
+            this.loadPlayer();
+        }
+        catch{
+            this.player.getConfig().systemText.api.error[302].message = 'No stream avaiable... for this key';
+            console.log("failed")
+        }
+
+    }
+    };
+    const demo = Vue.createApp(app);
+    const vm = demo.mount('#app');
+</script>
+
+
+{% endblock %}

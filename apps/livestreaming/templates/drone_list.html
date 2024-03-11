@@ -2,51 +2,120 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div> 
-        {% include '_alert.html' %}
+<style>
+  
+
+@keyframes wobble-hor-bottom {
+  0%,
+  100% {
+    -webkit-transform: translateX(0%);
+            transform: translateX(0%);
+    -webkit-transform-origin: 50% 50%;
+            transform-origin: 50% 50%;
+  }
+  15% {
+    -webkit-transform: translateX(-30px) rotate(-6deg);
+            transform: translateX(-30px) rotate(-6deg);
+  }
+  30% {
+    -webkit-transform: translateX(15px) rotate(6deg);
+            transform: translateX(15px) rotate(6deg);
+  }
+  45% {
+    -webkit-transform: translateX(-15px) rotate(-3.6deg);
+            transform: translateX(-15px) rotate(-3.6deg);
+  }
+  60% {
+    -webkit-transform: translateX(9px) rotate(2.4deg);
+            transform: translateX(9px) rotate(2.4deg);
+  }
+  75% {
+    -webkit-transform: translateX(-6px) rotate(-1.2deg);
+            transform: translateX(-6px) rotate(-1.2deg);
+  }
+}
+
+
+    .online-indicator {
+        display: inline-block;
+        background-color: green;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+ 
+        -webkit-animation: wobble-hor-bottom 0.8s both;
+                animation: wobble-hor-bottom 0.8s both;
         
-        <div class="d-flex align-items-center justify-content-center bg-light" style="padding-top: 100px;">
+    }
+    .offline-indicator {
+        display: inline-block;
+        background-color: gray;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+</style>
+<div> 
+    <div class="d-flex align-items-center justify-content-center bg-light" style="padding-top: 100px;">
+        <div class="w-100 table-responsive">
             
-            <div class="w-100 table-responsive">
+            <form class="p-4 g-2 border bg-light mt-4 align-items-center justify-content-end">
+                <div class="d-flex">
+                    <div class="p-1 d-flex align-items-center"> 
+                        <span>Status: </span>
+                    </div>
+                    <div class="p-2"> 
+                        {{ filter.form.status|as_crispy_field }}
+                    </div>
+                    <div class="p-2"> 
+                        {{ filter.form.search|as_crispy_field }}
+                    </div>
+                    <div class="p-2">
+                        <button type="submit" class="btn btn-danger mb-3"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
             
-                <form class="d-flex" style="float: right;" method="get">
-                    {{ filter.form|crispy|safe }}
-                    <button type="submit" class="btn btn-danger mb-3"><i class="fas fa-search"></i></button>
-                </form>
-                
-                <table class="table">
-                    <thead>
-                        <tr><th>#</th>
-                            <th>Drone</th>
-                            <th>Key</th>
-                            <th>Streaming</th>
-                            <th>UserDrone</th>
-                            <th>Action</th>
+            <table class="table">
+                <thead>
+                    <tr><th>#</th>
+                        <th>Drone</th>
+                        <th>Key</th>
+                        <th>Streaming</th>
+                        {% if request.user.role.role_name == 'admin' %}
+                        <th>UserDrone</th>
+                        <th>Action</th>
+                        {% endif %}
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drone in object_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ drone.name }}</td>
+                            <td>{{ drone.key }}</td>
+                            <td>
+                                <a href="{% url 'livestreaming:drone_view' pk=drone.pk %}">View</a>
+                            </td>
+                            {% if request.user.role.role_name == 'admin' %}
+                            <td>
+                                <a href="{% url 'livestreaming:user_drone_create' drone_id=drone.pk %}">{% trans "Add" %}</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'livestreaming:drone_update' pk=drone.pk %}">Update</a>
+                            </td>
+                            {% endif %}
+                            <td>
+                                {{ drone.status }}
+                            </td>
+                            
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for drone in object_list %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ drone.name }}</td>
-                                <td>{{ drone.key }}</td>
-                                <td>
-                                    <a href="{% url 'livestreaming:drone_view' pk=drone.pk %}">View</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'livestreaming:user_drone_create' drone_id=drone.pk %}">{% trans "Add" %}</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'livestreaming:drone_update' pk=drone.pk %}">Update</a>
-                                </td>
-                                
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                
-            </div>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% include '_pagination.html' %}
     </div>
+    {% include '_pagination.html' %}
+</div>
 {% endblock %}

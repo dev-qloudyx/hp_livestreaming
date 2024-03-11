@@ -1,16 +1,20 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div> 
+<div class="container mt-5">
     {% include '_alert.html' %}
-    <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
-        <div class="w-100" style="max-width: 500px;">
-            <form method="POST" class="bg-white shadow rounded px-5 py-4 mb-4">
-                {% csrf_token %}
-                <h3 class="text-center mb-4">Update Drone</h3>
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-danger btn-block">Update</button>
-            </form>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="{% url 'account_signup' %}">
+                        {% csrf_token %}
+                        <h3 class="text-center mb-4">Update Drone</h3>
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-danger btn-block">Update</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

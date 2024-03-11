@@ -1,19 +1,20 @@
-from typing import Any
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+import os
+
 from apps.livestreaming.filters import DroneFilter, UserDroneFilter
 from apps.livestreaming.forms import DroneForm, UserDroneForm
 from apps.livestreaming.models import Drone, UserDrone
-from apps.users.models import User
+from apps.livestreaming.utils import Drone_Helper
 from apps.users.roles import roles_required
+
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.db import IntegrityError
 from django.contrib import messages
 from django_filters.views import FilterView
+from django.utils.html import format_html
 
 
 # Create your views here.
@@ -21,9 +22,13 @@ from django_filters.views import FilterView
 @method_decorator([login_required, roles_required(['admin', 'user'])], name='dispatch')
 class DroneView(DetailView):
     model = Drone
-    template_name = 'drone_view.html'
+    template_name = 'drone_view_vue_oven.html'
 
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['url'] = f"{os.getenv('OME_URL')}{context['object'].key}"
+        return context
+
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class DroneCreateView(CreateView):
     model = Drone
@@ -42,12 +47,37 @@ class DroneUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('livestreaming:drone_list')
 
-@method_decorator([login_required, roles_required(['admin'])], name='dispatch')  
+@method_decorator([login_required], name='dispatch')  
 class DroneListView(FilterView):
     model = Drone
     template_name = 'drone_list.html'
     filterset_class = DroneFilter
     paginate_by = 5
+
+    def get_queryset(self):
+        if self.request.user.role == 'admin':
+            return Drone.objects.all()
+        else:
+            return Drone.objects.filter(userdrone__user=self.request.user)
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        drone_helper = Drone_Helper()
+        drone_list = []
+
+        for drone in context['object_list']:
+            url = os.getenv('OME_URL')
+            drone = drone_helper.get_and_set_status(url, drone)
+
+            if drone.status:
+                drone.status = format_html('<div class="online-indicator">Live</div>')
+            else:
+                drone.status = format_html('<div class="offline-indicator">Offline</div>')
+
+            drone_list.append(drone)
+
+        context['object_list'] = drone_list
+        return context
 
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class UserDroneCreateView(CreateView):
@@ -72,34 +102,13 @@ class UserDroneCreateView(CreateView):
     def get_success_url(self):
         return reverse('livestreaming:drone_list')
 
-@method_decorator([login_required, roles_required(['admin', 'user'])], name='dispatch')
-class UserDroneListView(UserPassesTestMixin, FilterView):
+@method_decorator([login_required, roles_required(['admin'])], name='dispatch')
+class UserDroneListView(FilterView):
     model = UserDrone
     template_name = 'user_drone_list.html'
     context_object_name = 'user_drone'
     filterset_class = UserDroneFilter
     paginate_by = 5
-
-    def get_queryset(self):
-        if 'user_id' in self.kwargs:
-            user_id = self.kwargs['user_id']
-            query_Set = UserDrone.objects.filter(user__pk=user_id)
-            return query_Set
-        if self.request.user.role.role_name == 'admin':
-            return UserDrone.objects.all()
-    
-    def test_func(self):
-        user = None
-        if 'user_id' in self.kwargs:
-            user = get_object_or_404(User, pk=self.kwargs['user_id'])
-        if user:
-            if user.role.role_name == 'admin':
-                return True
-            return self.request.user == user
-        if self.request.user.role.role_name == 'admin':
-            return True
-        else:
-            return False
 
 @method_decorator([login_required, roles_required(['admin'])], name='dispatch')
 class UserDroneUpdateView(UpdateView):
@@ -124,6 +133,6 @@ class UserDroneDeleteView(DeleteView):
     model = UserDrone
 
     def get_success_url(self):
-        return reverse('livestreaming:user_drone_list')
+        return reverse('livestreaming:drone_list')
 
 
